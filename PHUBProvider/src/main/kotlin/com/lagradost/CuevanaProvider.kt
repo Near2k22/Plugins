@@ -47,8 +47,8 @@ class PHUBProvider : MainAPI() {
         for ((url, name) in urls) {
             try {
                 val soup = app.get(url).document
-                val home = soup.select("section.home-series li").map {
-                    val title = it.selectFirst("h2.Title")!!.text()
+                val home = soup.select("li.TPostMv").map {
+                    val title = it.selectFirst(".Title")!!.text()
                     val link = it.selectFirst("a")!!.attr("href")
                     TvSeriesSearchResponse(
                         title,
@@ -108,7 +108,7 @@ class PHUBProvider : MainAPI() {
         val soup = app.get(url, timeout = 120).document
         val title = soup.selectFirst("h1.Title")!!.text()
         val description = soup.selectFirst(".Description p")?.text()?.trim()
-        val poster: String? = soup.selectFirst("figure.Objf img")!!.attr("src")
+        val poster: String? = soup.selectFirst("figure img")!!.attr("src")
         val year1 = soup.selectFirst("footer p.meta").toString()
         val yearRegex = Regex("<span>(\\d+)</span>")
         val yearf =
