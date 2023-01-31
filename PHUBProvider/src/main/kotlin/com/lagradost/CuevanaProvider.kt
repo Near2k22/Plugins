@@ -22,7 +22,7 @@ class PHUBProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
         val items = ArrayList<HomePageList>()
         val urls = listOf(
-            Pair("$mainUrl/serie", "Series"),
+            Pair("$mainUrl/peliculas-mas-valoradas/", "Rating"),
             Pair("$mainUrl/estrenos/", "Estrenos"),
         )
         items.add(
@@ -31,7 +31,7 @@ class PHUBProvider : MainAPI() {
                 app.get("$mainUrl/serie/", timeout = 120).document.select("section.home-series li")
                     .map {
                         val title = it.selectFirst("h2.Title")!!.text()
-                        val poster = it.selectFirst("img.lazy")!!.attr("data-src")
+                        val poster = it.selectFirst("figure img")!!.attr("data-src")
                         val poster2 = poster.replace("-100x100", "")
                         val url = it.selectFirst("a")!!.attr("href")
                         TvSeriesSearchResponse(
