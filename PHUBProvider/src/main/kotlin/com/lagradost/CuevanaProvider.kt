@@ -32,13 +32,14 @@ class PHUBProvider : MainAPI() {
                     .map {
                         val title = it.selectFirst("h2.Title")!!.text()
                         val poster = it.selectFirst("img.lazy")!!.attr("data-src")
+                        val poster2 = poster.replace("-100x100", "")
                         val url = it.selectFirst("a")!!.attr("href")
                         TvSeriesSearchResponse(
                             title,
                             url,
                             this.name,
                             TvType.Anime,
-                            poster,
+                            poster2,
                             null,
                             null,
                         )
@@ -47,7 +48,7 @@ class PHUBProvider : MainAPI() {
         for ((url, name) in urls) {
             try {
                 val soup = app.get(url).document
-                val home = soup.select("li.TPostMv").map {
+                val home = soup.select("li.xxx.TPostMv").map {
                     val title = it.selectFirst(".Title")!!.text()
                     val link = it.selectFirst("a")!!.attr("href")
                     TvSeriesSearchResponse(
