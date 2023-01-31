@@ -109,7 +109,7 @@ class PHUBProvider : MainAPI() {
         val soup = app.get(url, timeout = 120).document
         val title = soup.selectFirst("h1.Title")!!.text()
         val description = soup.selectFirst(".Description p")?.text()?.trim()
-        val poster: String? = soup.selectFirst(".TPost.Image img")!!.attr("src")
+        val poster: String? = soup.selectFirst("article.Image img")!!.attr("src")
         val year1 = soup.selectFirst("footer p.meta").toString()
         val yearRegex = Regex("<span>(\\d+)</span>")
         val yearf =
