@@ -28,7 +28,7 @@ class PHUBProvider : MainAPI() {
         items.add(
             HomePageList(
                 "Series",
-                app.get("$mainUrl/estrenos/", timeout = 120).document.select("section.home-series li")
+                app.get("$mainUrl/serie/", timeout = 120).document.select("section.home-series li")
                     .map {
                         val title = it.selectFirst("h2.Title")!!.text()
                         val poster = it.selectFirst("img.lazy")!!.attr("data-src")
@@ -108,7 +108,7 @@ class PHUBProvider : MainAPI() {
         val soup = app.get(url, timeout = 120).document
         val title = soup.selectFirst("h1.Title")!!.text()
         val description = soup.selectFirst(".Description p")?.text()?.trim()
-        val poster: String? = soup.selectFirst(".TPost.movtv-info.cont.Objf figure img")!!.attr("src")
+        val poster: String? = soup.selectFirst("figure.Objf img")!!.attr("src")
         val year1 = soup.selectFirst("footer p.meta").toString()
         val yearRegex = Regex("<span>(\\d+)</span>")
         val yearf =
