@@ -199,7 +199,7 @@ class PHUBProvider : MainAPI() {
     ): Boolean {
         app.get(data).document.select("div.TPlayer.embed_div iframe").apmap {
             val iframe = fixUrl(it.attr("data-src"))
-            if (iframe.contains("api.cuevana3.club/fembed/")) {
+            if (iframe.contains("api.cuevana3.me/fembed/")) {
                 val femregex =
                     Regex("(https.\\/\\/api\\.cuevana3\\.me\\/fembed\\/\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                 femregex.findAll(iframe).map { femreg ->
@@ -210,7 +210,7 @@ class PHUBProvider : MainAPI() {
                         "https://api.cuevana3.me/fembed/api.php",
                         allowRedirects = false,
                         headers = mapOf(
-                            "Host" to "api.cuevana3.club",
+                            "Host" to "api.cuevana3.me",
                             "User-Agent" to USER_AGENT,
                             "Accept" to "application/json, text/javascript, */*; q=0.01",
                             "Accept-Language" to "en-US,en;q=0.5",
