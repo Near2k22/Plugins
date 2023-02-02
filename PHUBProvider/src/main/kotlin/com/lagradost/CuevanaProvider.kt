@@ -6,7 +6,6 @@ import com.lagradost.cloudstream3.mvvm.logError
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
-import com.lagradost.cloudstream3.network.CloudflareKiller
 
 class PHUBProvider : MainAPI() {
     override var mainUrl = "https://cuevana3.ai"
@@ -19,11 +18,11 @@ class PHUBProvider : MainAPI() {
         TvType.Movie,
         TvType.TvSeries,
     )
-    private val interceptor = CloudflareKiller()
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+
+    override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
         val items = ArrayList<HomePageList>()
         val urls = listOf(
-            Pair("$mainUrl/serie", "Series"),
+            Pair("$mainUrl/peliculas-mas-valoradas/", "Rating"),
             Pair("$mainUrl/estrenos/", "Estrenos"),
         )
         items.add(
@@ -32,7 +31,7 @@ class PHUBProvider : MainAPI() {
                 app.get("$mainUrl/serie/", timeout = 120).document.select("section.home-series li")
                     .map {
                         val title = it.selectFirst("h2.Title")!!.text()
-                        val poster = it.selectFirst("img.lazy")!!.attr("data-src")
+                        val poster = it.selectFirst("figure img")!!.attr("data-src")
                         val url = it.selectFirst("a")!!.attr("href")
                         TvSeriesSearchResponse(
                             title,
@@ -48,8 +47,8 @@ class PHUBProvider : MainAPI() {
         for ((url, name) in urls) {
             try {
                 val soup = app.get(url).document
-                val home = soup.select("section.home-series li").map {
-                    val title = it.selectFirst("h2.Title")!!.text()
+                val home = soup.select("li.xxx.TPostMv").map {
+                    val title = it.selectFirst(".Title")!!.text()
                     val link = it.selectFirst("a")!!.attr("href")
                     TvSeriesSearchResponse(
                         title,
@@ -109,8 +108,8 @@ class PHUBProvider : MainAPI() {
         val soup = app.get(url, timeout = 120).document
         val title = soup.selectFirst("h1.Title")!!.text()
         val description = soup.selectFirst(".Description p")?.text()?.trim()
-        val poster: String? = soup.selectFirst("figure.Objf img")!!.attr("src")
-        val year1 = soup.selectFirst("footer p.clubta").toString()
+        val poster: String? = soup.selectFirst(".movtv-info div.Image img")!!.attr("data-src").replace("w185_and_h278_bestv2", "original")
+        val year1 = soup.selectFirst("footer p.meta").toString()
         val yearRegex = Regex("<span>(\\d+)</span>")
         val yearf =
             yearRegex.find(year1)?.destructured?.component1()?.replace(Regex("<span>|</span>"), "")
@@ -234,15 +233,15 @@ class PHUBProvider : MainAPI() {
             }
             if (iframe.contains("tomatomatela")) {
                 val tomatoRegex =
-                    Regex("(\\/\\/apialfa.tomatomatela.club\\/ir\\/player.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
+                    Regex("(\\/\\/apialfa.tomatomatela.com\\/ir\\/player.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                 tomatoRegex.findAll(iframe).map { tomreg ->
                     tomreg.value
                 }.toList().apmap { tom ->
-                    val tomkey = tom.replace("//apialfa.tomatomatela.club/ir/player.php?h=", "")
+                    val tomkey = tom.replace("//apialfa.tomatomatela.com/ir/player.php?h=", "")
                     app.post(
-                        "https://apialfa.tomatomatela.club/ir/rd.php", allowRedirects = false,
+                        "https://apialfa.tomatomatela.com/ir/rd.php", allowRedirects = false,
                         headers = mapOf(
-                            "Host" to "apialfa.tomatomatela.club",
+                            "Host" to "apialfa.tomatomatela.com",
                             "User-Agent" to USER_AGENT,
                             "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                             "Accept-Language" to "en-US,en;q=0.5",
@@ -259,15 +258,15 @@ class PHUBProvider : MainAPI() {
                     ).okhttpResponse.headers.values("location").apmap { loc ->
                         if (loc.contains("goto_ddh.php")) {
                             val gotoregex =
-                                Regex("(\\/\\/api.cuevana3.club\\/ir\\/goto_ddh.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
+                                Regex("(\\/\\/api.cuevana3.me\\/ir\\/goto_ddh.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                             gotoregex.findAll(loc).map { goreg ->
-                                goreg.value.replace("//api.cuevana3.club/ir/goto_ddh.php?h=", "")
+                                goreg.value.replace("//api.cuevana3.me/ir/goto_ddh.php?h=", "")
                             }.toList().apmap { gotolink ->
                                 app.post(
-                                    "https://api.cuevana3.club/ir/redirect_ddh.php",
+                                    "https://api.cuevana3.me/ir/redirect_ddh.php",
                                     allowRedirects = false,
                                     headers = mapOf(
-                                        "Host" to "api.cuevana3.club",
+                                        "Host" to "api.cuevana3.me",
                                         "User-Agent" to USER_AGENT,
                                         "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                                         "Accept-Language" to "en-US,en;q=0.5",
@@ -288,14 +287,14 @@ class PHUBProvider : MainAPI() {
                         }
                         if (loc.contains("index.php?h=")) {
                             val indexRegex =
-                                Regex("(\\/\\/api.cuevana3.club\\/sc\\/index.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
+                                Regex("(\\/\\/api.cuevana3.me\\/sc\\/index.php\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                             indexRegex.findAll(loc).map { indreg ->
-                                indreg.value.replace("//api.cuevana3.club/sc/index.php?h=", "")
+                                indreg.value.replace("//api.cuevana3.me/sc/index.php?h=", "")
                             }.toList().apmap { inlink ->
                                 app.post(
-                                    "https://api.cuevana3.club/sc/r.php", allowRedirects = false,
+                                    "https://api.cuevana3.me/sc/r.php", allowRedirects = false,
                                     headers = mapOf(
-                                        "Host" to "api.cuevana3.club",
+                                        "Host" to "api.cuevana3.me",
                                         "User-Agent" to USER_AGENT,
                                         "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                                         "Accept-Language" to "en-US,en;q=0.5",
