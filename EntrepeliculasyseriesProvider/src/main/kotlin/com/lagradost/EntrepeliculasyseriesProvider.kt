@@ -21,6 +21,7 @@ class EntrepeliculasyseriesProvider : MainAPI() {
         val items = ArrayList<HomePageList>()
         val urls = listOf(
             Pair("$mainUrl/peliculas/", "Peliculas"),
+            Pair("$mainUrl/series/", "Series"),
         )
     urls.apmap { (url, name) ->
         try {
