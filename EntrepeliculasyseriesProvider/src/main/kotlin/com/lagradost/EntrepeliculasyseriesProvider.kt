@@ -33,7 +33,7 @@ class EntrepeliculasyseriesProvider : MainAPI() {
 
         val soup = app.get(url, interceptor = interceptor).document
         val home = soup.select(".MovieList li").map {
-            val title = it.selectFirst("h2")!!.text()
+            val title = it.selectFirst(".item-detail h2")!!.text()
             val link = it.selectFirst("a")!!.attr("href")
             TvSeriesSearchResponse(
                 title,
