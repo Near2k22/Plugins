@@ -1,6 +1,7 @@
 package com.lagradost
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.loadExtractor
@@ -28,7 +29,7 @@ open class PelisplusProviderTemplate : MainAPI() {
     // if hasQuickSearch is true and quickSearch() hasn't been overridden you will get errors.
     // VidEmbed actually has quick search on their site, but the function wasn't implemented.
     override val hasQuickSearch = false
-
+    private val interceptor = CloudflareKiller()
     // If getMainPage() is functional, used to display the homepage in app, an optional, but highly encouraged endevour.
     override val hasMainPage = true
 
@@ -39,7 +40,7 @@ open class PelisplusProviderTemplate : MainAPI() {
         // Simply looking at devtools network is enough to spot a request like:
         // https://vidembed.cc/search.html?keyword=neverland where neverland is the query, can be written as below.
         val link = "$mainUrl/search.html?keyword=$query"
-        val html = app.get(link).text
+        val html = app.get(link, interceptor = interceptor).text
         val soup = Jsoup.parse(html)
 
         return ArrayList(soup.select(".listing.items > .video-block").map { li ->
