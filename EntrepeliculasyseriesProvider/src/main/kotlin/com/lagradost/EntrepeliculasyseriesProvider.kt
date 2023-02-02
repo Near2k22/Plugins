@@ -31,16 +31,16 @@ class EntrepeliculasyseriesProvider : MainAPI() {
     ): HomePageResponse {
         val url = request.data + page
 
-        val soup = app.get(url, interceptor = interceptor).document
-        val home = soup.select(".MovieList li").map {
-            val title = it.selectFirst(".item-detail h2")!!.text()
+        val soup = app.get("$url/peliculas/", interceptor = interceptor).document
+        val home = soup.select("ul.list-movie li").map {
+            val title = it.selectFirst("a.link-title h2")!!.text()
             val link = it.selectFirst("a")!!.attr("href")
             TvSeriesSearchResponse(
                 title,
                 link,
                 this.name,
                 if (link.contains("/pelicula/")) TvType.Movie else TvType.TvSeries,
-                it.selectFirst(".Image img")!!.attr("src"),
+                it.selectFirst("a.poster img")!!.attr("src"),
                 null,
                 null,
             )
