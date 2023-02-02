@@ -10,7 +10,7 @@ class PelisplusProvider : PelisplusProviderTemplate() {
     override var mainUrl = "https://pelisplus.icu"
 
     // name is for how the provider will be named which is visible in the UI, no real rules for this.
-    override var name = "Pelisplus"
+    override var name = "Pplus"
 
     override val homePageUrlList = listOf(
         mainUrl,
