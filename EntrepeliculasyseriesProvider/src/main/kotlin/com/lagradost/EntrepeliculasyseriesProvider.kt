@@ -30,15 +30,15 @@ class EntrepeliculasyseriesProvider : MainAPI() {
         val url = request.data + page
 
         val soup = app.get(url).document
-        val home = soup.select("ul.list-movie li").map {
-            val title = it.selectFirst("a.link-title h2")!!.text()
+        val home = soup.select("ul.MovieList li").map {
+            val title = it.selectFirst(".item-detail h2")!!.text()
             val link = it.selectFirst("a")!!.attr("href")
             TvSeriesSearchResponse(
                 title,
                 link,
                 this.name,
                 if (link.contains("/pelicula/")) TvType.Movie else TvType.TvSeries,
-                it.selectFirst("a.poster img")!!.attr("src"),
+                it.selectFirst(".Image img")!!.attr("src"),
                 null,
                 null,
             )
