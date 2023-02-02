@@ -22,6 +22,7 @@ class EntrepeliculasyseriesProvider : MainAPI() {
         val urls = listOf(
             Pair("$mainUrl/peliculas/", "Peliculas"),
             Pair("$mainUrl/series/", "Series"),
+            Pair("$mainUrl/anime/", "Animes"),
         )
     urls.apmap { (url, name) ->
         try {
