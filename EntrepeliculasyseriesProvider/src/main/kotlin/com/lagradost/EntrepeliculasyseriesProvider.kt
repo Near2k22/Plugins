@@ -5,8 +5,8 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
 
 class EntrepeliculasyseriesProvider : MainAPI() {
-    override var mainUrl = "https://entrepeliculasyseries.nu"
-    override var name = "EntrePeliculasySeries"
+    override var mainUrl = "https://entrepeliculasyseries.nz"
+    override var name = "Películas y Series"
     override var lang = "es"
     override val hasMainPage = true
     override val hasChromecastSupport = true
@@ -18,9 +18,9 @@ class EntrepeliculasyseriesProvider : MainAPI() {
     override val vpnStatus = VPNStatus.MightBeNeeded //Due to evoload sometimes not loading
 
     override val mainPage = mainPageOf(
-        Pair("$mainUrl/series/page/", "Series"),
-        Pair("$mainUrl/peliculas/page/", "Peliculas"),
-        Pair("$mainUrl/anime/page/", "Animes"),
+        Pair("$mainUrl/series/", "Series"),
+        Pair("$mainUrl/peliculas/", "Peliculas"),
+        Pair("$mainUrl/anime/", "Animes"),
     )
 
     override suspend fun getMainPage(
