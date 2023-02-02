@@ -1,6 +1,7 @@
 package com.lagradost
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
 
@@ -15,6 +16,7 @@ class EntrepeliculasyseriesProvider : MainAPI() {
         TvType.Movie,
         TvType.TvSeries,
     )
+    private val interceptor = CloudflareKiller()
     override val vpnStatus = VPNStatus.MightBeNeeded //Due to evoload sometimes not loading
 
     override val mainPage = mainPageOf(
@@ -29,8 +31,8 @@ class EntrepeliculasyseriesProvider : MainAPI() {
     ): HomePageResponse {
         val url = request.data + page
 
-        val soup = app.get(url).document
-        val home = soup.select("ul.MovieList li").map {
+        val soup = app.get(url, interceptor = interceptor).document
+        val home = soup.select(".MovieList li").map {
             val title = it.selectFirst("h2")!!.text()
             val link = it.selectFirst("a")!!.attr("href")
             TvSeriesSearchResponse(
