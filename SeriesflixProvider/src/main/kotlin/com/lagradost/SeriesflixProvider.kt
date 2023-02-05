@@ -7,7 +7,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
 
 class SeriesflixProvider : MainAPI() {
-    override var mainUrl = "https://seriesflix.video"
+    override var mainUrl = "https://seriesflix.is"
     override var name = "Seriesflix"
     override var lang = "es"
     override val hasMainPage = true
@@ -134,7 +134,7 @@ class SeriesflixProvider : MainAPI() {
                         val epthumb = episode.selectFirst("img")?.attr("src")
                         val aName = episode.selectFirst("> td.MvTbTtl > a")
                         val name = aName!!.text()
-                        val href = aName!!.attr("href")
+                        val href = aName.attr("href")
                         val date = episode.selectFirst("> td.MvTbTtl > span")?.text()
                         episodeList.add(
                             newEpisode(href) {
