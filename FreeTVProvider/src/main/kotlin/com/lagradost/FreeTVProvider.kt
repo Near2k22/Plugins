@@ -9,7 +9,7 @@ import java.io.InputStream
 
 class FreeTVProvider : MainAPI() {
     override var lang = "es"
-    override var mainUrl = "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"
+    override var mainUrl = "https://pelishub.online/tv.php"
     override var name = "PelisHUB TV"
     override val hasMainPage = true
     override val hasChromecastSupport = true
