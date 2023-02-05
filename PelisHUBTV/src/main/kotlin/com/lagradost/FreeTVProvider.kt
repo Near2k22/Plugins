@@ -7,7 +7,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 import java.io.InputStream
 
-class FreeTVProvider : MainAPI() {
+class PhubtvProvider : MainAPI() {
     override var lang = "es"
     override var mainUrl = "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"
     override var name = "PelisHUB TV"
@@ -32,7 +32,7 @@ class FreeTVProvider : MainAPI() {
                 LiveSearchResponse(
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
-                    this@FreeTVProvider.name,
+                    this@PhubtvProvider.name,
                     TvType.Live,
                     posterurl,
                     lang = channel.attributes["group-title"]
@@ -50,17 +50,17 @@ class FreeTVProvider : MainAPI() {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return data.items.filter { it.attributes["tvg-id"]?.contains(query) ?: false }.map { channel ->
-            val streamurl = channel.url.toString()
-            val channelname = channel.attributes["tvg-id"].toString()
-            val posterurl = channel.attributes["tvg-logo"].toString()
-            val nation = channel.attributes["group-title"].toString()
-            LiveSearchResponse(
-                channelname,
-                LoadData(streamurl, channelname, posterurl, nation).toJson(),
-                this@FreeTVProvider.name,
-                TvType.Live,
-                posterurl,
-            )
+                val streamurl = channel.url.toString()
+                val channelname = channel.attributes["tvg-id"].toString()
+                val posterurl = channel.attributes["tvg-logo"].toString()
+                val nation = channel.attributes["group-title"].toString()
+                LiveSearchResponse(
+                    channelname,
+                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    this@PhubtvProvider.name,
+                    TvType.Live,
+                    posterurl,
+                )
         }
     }
 
