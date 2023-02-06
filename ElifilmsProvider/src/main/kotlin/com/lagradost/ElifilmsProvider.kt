@@ -93,7 +93,7 @@ class ElifilmsProvider : MainAPI() {
         val episodes = soup.select("ul.episodios li").map { li ->
             val href = (li.select("a")).attr("href")
             val epThumb = li.selectFirst("img")!!.attr("src")
-            val seasonid = li.selectFirst("numerando")!!.text().let { str ->
+            val seasonid = li.selectFirst(".numerando")!!.text().let { str ->
                 str.split("-").mapNotNull { subStr -> subStr.toIntOrNull() }
             }
             val isValid = seasonid.size == 2
