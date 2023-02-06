@@ -19,7 +19,7 @@ class CinecalidadProvider : MainAPI() {
     override val vpnStatus = VPNStatus.MightBeNeeded //Due to evoload sometimes not loading
 
     override val mainPage = mainPageOf(
-        Pair("$mainUrl/ver-serie/", "Series"),
+        Pair("$mainUrl/serie/", "Series"),
         Pair("$mainUrl/", "Peliculas"),
         Pair("$mainUrl/4k/", "4K UHD"),
     )
@@ -52,11 +52,11 @@ class CinecalidadProvider : MainAPI() {
         val url = "$mainUrl/?s=${query}"
         val document = app.get(url).document
 
-        return document.select("article").map {
-            val title = it.selectFirst("div.in_title")!!.text()
+        return document.select(".relative.group").map {
+            val title = it.selectFirst(".sr-only")!!.text()
             val href = it.selectFirst("a")!!.attr("href")
-            val image = it.selectFirst(".poster.custom img")!!.attr("data-src")
-            val isMovie = href.contains("/ver-pelicula/")
+            val image = it.selectFirst("img")!!.attr("data-src")
+            val isMovie = href.contains("/pelicula/")
 
             if (isMovie) {
                 MovieSearchResponse(
@@ -85,9 +85,9 @@ class CinecalidadProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val soup = app.get(url, timeout = 120).document
 
-        val title = soup.selectFirst(".single_left h1")!!.text()
-        val description = soup.selectFirst("div.single_left table tbody tr td p")?.text()?.trim()
-        val poster: String? = soup.selectFirst(".alignnone")!!.attr("data-src")
+        val title = soup.selectFirst(".mb-2.text-lg")!!.text()
+        val description = soup.selectFirst("div.textwidget.max-w-none p")?.text()?.trim()
+        val poster: String? = soup.selectFirst("figure.col-span-2 img")!!.attr("data-src")
         val episodes = soup.select("div.se-c div.se-a ul.episodios li").map { li ->
             val href = li.selectFirst("a")!!.attr("href")
             val epThumb = li.selectFirst("img.lazy")!!.attr("data-src")
