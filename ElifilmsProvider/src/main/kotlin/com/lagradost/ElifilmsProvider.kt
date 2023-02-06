@@ -22,7 +22,7 @@ class ElifilmsProvider : MainAPI() {
         val urls = listOf(
             Pair("$mainUrl/peliculas/", "Peliculas"),
             Pair("$mainUrl/series/", "Series"),
-            Pair("$mainUrl/peliculas/", "animes"),
+            Pair("$mainUrl/animes/", "animes"),
         )
         urls.apmap { (url, name) ->
             try {
@@ -89,7 +89,7 @@ class ElifilmsProvider : MainAPI() {
 
         val title = soup.selectFirst(".data h1")!!.text()
         val description = soup.selectFirst(".wp-content p")?.text()?.trim()
-        val poster: String? = soup.selectFirst(".poster img")!!.attr("src").replace("w154", "original")
+        val poster: String? = soup.selectFirst("img")!!.attr("src").replace("w154", "original")
         val episodes = soup.select(".TPostMv article").map { li ->
             val href = (li.select("a") ?: li.select(".C a") ?: li.select("article a")).attr("href")
             val epThumb = li.selectFirst("div.Image img")!!.attr("data-src")
