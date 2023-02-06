@@ -93,7 +93,7 @@ class CinecalidadProvider : MainAPI() {
             val epThumb = li.selectFirst("img")!!.attr("data-src")
             val name = li.selectFirst(".episodiotitle a")!!.text()
             val seasonid =
-                li.selectFirst(".numerando")!!.text().replace(Regex("(S|E)"), "").let { str ->
+                li.selectFirst(".numerando")!!.text().replace(Regex("(S|EP)"), "").let { str ->
                     str.split("-").mapNotNull { subStr -> subStr.toIntOrNull() }
                 }
             val isValid = seasonid.size == 2
@@ -148,18 +148,19 @@ class CinecalidadProvider : MainAPI() {
         val doc = datam.document
         val datatext = datam.text
 
-        doc.select(".dooplay_player_option").apmap {
-            val url = it.attr("data-option")
+        doc.select(".py-1").apmap {
+            val url = it.attr("data-src")
+            val urldecode = base64Decode(url)
 //            if (url.startsWith("https://cinestart.net")) {
 //                val extractor = Cinestart()
 //                extractor.getSafeUrl(url, null, subtitleCallback, callback)
 //            } else {
-                loadExtractor(url, mainUrl, subtitleCallback, callback)
+                loadExtractor(urldecode, mainUrl, subtitleCallback, callback)
 //            }
-            if (url.startsWith("https://cinecalidad.ms")) {
+            if (urldecode.startsWith("https://cinecalidad.ms")) {
                 val cineurlregex =
                     Regex("(https:\\/\\/cinecalidad\\.lol\\/play\\/\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
-                cineurlregex.findAll(url).map {
+                cineurlregex.findAll(urldecode).map {
                     it.value.replace("/play/", "/play/r.php")
                 }.toList().apmap {
                     app.get(
