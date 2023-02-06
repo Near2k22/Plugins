@@ -6,7 +6,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
 
 class CinecalidadProvider : MainAPI() {
-    override var mainUrl = "https://cinecalidad.run"
+    override var mainUrl = "https://cinecalidad.ms"
     override var name = "Calidad"
     override var lang = "es"
     override val hasMainPage = true
@@ -21,7 +21,7 @@ class CinecalidadProvider : MainAPI() {
     override val mainPage = mainPageOf(
         Pair("$mainUrl/ver-serie/", "Series"),
         Pair("$mainUrl/", "Peliculas"),
-        Pair("$mainUrl/genero-de-la-pelicula/peliculas-en-calidad-4k/", "4K Ultra HD"),
+        Pair("$mainUrl/4k/", "4K UHD"),
     )
 
     override suspend fun getMainPage(
@@ -31,15 +31,15 @@ class CinecalidadProvider : MainAPI() {
         val url = request.data + page
 
         val soup = app.get(url).document
-        val home = soup.select(".item.movies").map {
-            val title = it.selectFirst("div.in_title")!!.text()
+        val home = soup.select(".relative.group").map {
+            val title = it.selectFirst(".sr-only")!!.text()
             val link = it.selectFirst("a")!!.attr("href")
             TvSeriesSearchResponse(
                 title,
                 link,
                 this.name,
-                if (link.contains("/ver-pelicula/")) TvType.Movie else TvType.TvSeries,
-                it.selectFirst(".poster.custom img")!!.attr("data-src"),
+                if (link.contains("/pelicula/")) TvType.Movie else TvType.TvSeries,
+                it.selectFirst("img")!!.attr("data-src"),
                 null,
                 null,
             )
@@ -156,7 +156,7 @@ class CinecalidadProvider : MainAPI() {
 //            } else {
                 loadExtractor(url, mainUrl, subtitleCallback, callback)
 //            }
-            if (url.startsWith("https://cinecalidad.lol")) {
+            if (url.startsWith("https://cinecalidad.ms")) {
                 val cineurlregex =
                     Regex("(https:\\/\\/cinecalidad\\.lol\\/play\\/\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                 cineurlregex.findAll(url).map {
@@ -165,7 +165,7 @@ class CinecalidadProvider : MainAPI() {
                     app.get(
                         it,
                         headers = mapOf(
-                            "Host" to "cinecalidad.lol",
+                            "Host" to "cinecalidad.ms",
                             "User-Agent" to USER_AGENT,
                             "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                             "Accept-Language" to "en-US,en;q=0.5",
@@ -197,7 +197,7 @@ class CinecalidadProvider : MainAPI() {
                     loadExtractor(url, mainUrl, subtitleCallback, callback)
 //                }
 
-                if (url.startsWith("https://cinecalidad.lol")) {
+                if (url.startsWith("https://cinecalidad.ms")) {
                     val cineurlregex =
                         Regex("(https:\\/\\/cinecalidad\\.lol\\/play\\/\\?h=[a-zA-Z0-9]{0,8}[a-zA-Z0-9_-]+)")
                     cineurlregex.findAll(url).map {
@@ -206,7 +206,7 @@ class CinecalidadProvider : MainAPI() {
                         app.get(
                             it,
                             headers = mapOf(
-                                "Host" to "cinecalidad.lol",
+                                "Host" to "cinecalidad.ms",
                                 "User-Agent" to USER_AGENT,
                                 "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                                 "Accept-Language" to "en-US,en;q=0.5",
