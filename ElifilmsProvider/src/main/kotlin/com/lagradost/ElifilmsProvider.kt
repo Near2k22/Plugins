@@ -89,7 +89,7 @@ class ElifilmsProvider : MainAPI() {
 
         val title = soup.selectFirst(".data h1")!!.text()
         val description = soup.selectFirst(".wp-content p")?.text()?.trim()
-        val poster: String? = soup.selectFirst("div#galeria a")!!.attr("href")
+        val poster = soup.selectFirst("div.poster img")!!.attr("src")
         val episodes = soup.select("il.episodios li").map { li ->
             val href = (li.select("a") ?: li.select(".C a") ?: li.select("a")).attr("href")
             val epThumb = li.selectFirst("div.imagen img")!!.attr("src")
