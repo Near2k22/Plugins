@@ -21,7 +21,7 @@ class CinecalidadProvider : MainAPI() {
     override val mainPage = mainPageOf(
         Pair("$mainUrl/serie/", "Series"),
         Pair("$mainUrl/", "Peliculas"),
-        Pair("$mainUrl/4k/", "4K UHD"),
+        Pair("$mainUrl/4k/", "4K ULTRA HD"),
     )
 
     override suspend fun getMainPage(
@@ -90,7 +90,7 @@ class CinecalidadProvider : MainAPI() {
         val poster: String? = soup.selectFirst(".gap-4 img")?.attr("data-src")?.replace("-400x600", "")
         val episodes = soup.select("ul.episodios li.mark-1").map { li ->
             val href = li.selectFirst("a")!!.attr("href")
-            val epThumb = li.selectFirst(".imagen img")!!.attr("data-src")
+            val epThumb = li.selectFirst("img")!!.attr("data-src")
             val name = li.selectFirst(".episodiotitle a")!!.text()
             val seasonid =
                 li.selectFirst(".numerando")!!.text().replace(Regex("(S|E)"), "").let { str ->
