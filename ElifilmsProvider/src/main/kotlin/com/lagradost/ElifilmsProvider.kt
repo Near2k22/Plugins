@@ -21,11 +21,13 @@ class ElifilmsProvider : MainAPI() {
         val items = ArrayList<HomePageList>()
         val urls = listOf(
             Pair("$mainUrl/peliculas/", "Peliculas"),
+            Pair("$mainUrl/series/", "Series"),
+            Pair("$mainUrl/peliculas/", "animes"),
         )
         urls.apmap { (url, name) ->
             try {
                 val soup = app.get(url).document
-                val home = soup.select(".item.movies").map {
+                val home = soup.select(".item").map {
                     val title = it.selectFirst("h3")!!.text()
                     val link = it.selectFirst("a")!!.attr("href")
                     TvSeriesSearchResponse(
@@ -52,11 +54,11 @@ class ElifilmsProvider : MainAPI() {
         val url = "$mainUrl/?s=${query}"
         val document = app.get(url).document
 
-        return document.select("li.xxx.TPostMv").map {
-            val title = it.selectFirst("h2.Title")!!.text()
+        return document.select(".item").map {
+            val title = it.selectFirst("h3")!!.text()
             val href = it.selectFirst("a")!!.attr("href")
-            val image = it.selectFirst("img.lazy")!!.attr("data-src")
-            val isMovie = href.contains("/pelicula/")
+            val image = it.selectFirst("img")!!.attr("srcset")
+            val isMovie = href.contains("/peliculas/")
 
             if (isMovie) {
                 MovieSearchResponse(
@@ -85,9 +87,9 @@ class ElifilmsProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val soup = app.get(url, timeout = 120).document
 
-        val title = soup.selectFirst("h1.title-post")!!.text()
-        val description = soup.selectFirst("p.text-content:nth-child(3)")?.text()?.trim()
-        val poster: String? = soup.selectFirst("article.TPost img.lazy")!!.attr("data-src")
+        val title = soup.selectFirst(".data h1")!!.text()
+        val description = soup.selectFirst(".wp-content p")?.text()?.trim()
+        val poster: String? = soup.selectFirst(".poster img")!!.attr("src").replace("w154", "original")
         val episodes = soup.select(".TPostMv article").map { li ->
             val href = (li.select("a") ?: li.select(".C a") ?: li.select("article a")).attr("href")
             val epThumb = li.selectFirst("div.Image img")!!.attr("data-src")
@@ -106,7 +108,7 @@ class ElifilmsProvider : MainAPI() {
             )
         }
         return when (val tvType =
-            if (url.contains("/pelicula/")) TvType.Movie else TvType.TvSeries) {
+            if (url.contains("/peliculas/")) TvType.Movie else TvType.TvSeries) {
             TvType.TvSeries -> {
                 TvSeriesLoadResponse(
                     title,
