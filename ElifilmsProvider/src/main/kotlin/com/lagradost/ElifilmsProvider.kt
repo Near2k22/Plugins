@@ -92,7 +92,7 @@ class ElifilmsProvider : MainAPI() {
         val poster = soup.selectFirst("div#galeria a")!!.attr("href")
         val episodes = soup.select("ul.episodios li").map { li ->
             val href = (li.select("a")).attr("href")
-            val epThumb = li.selectFirst("div.imagen img")!!.attr("src")
+            val epThumb = li.selectFirst("img")!!.attr("src")
             val seasonid = li.selectFirst("numerando")!!.text().let { str ->
                 str.split("-").mapNotNull { subStr -> subStr.toIntOrNull() }
             }
