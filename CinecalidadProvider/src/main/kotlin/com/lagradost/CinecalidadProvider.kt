@@ -88,6 +88,7 @@ class CinecalidadProvider : MainAPI() {
         val title = soup.selectFirst(".mb-2.text-lg")!!.text()
         val description = soup.selectFirst("div.textwidget.max-w-none p")?.text()?.trim()
         val poster: String? = soup.selectFirst(".gap-4 img")?.attr("data-src")?.replace("-400x600", "")
+
         val episodes = soup.select("ul.episodios li.mark-1").map { li ->
             val href = li.selectFirst("a")!!.attr("href")
             val epThumb = li.selectFirst("img")!!.attr("data-src")
@@ -147,7 +148,6 @@ class CinecalidadProvider : MainAPI() {
 
         val datam = app.get(data)
         val doc = datam.document
-        val datatext = datam.text
 
         doc.select(".py-1").apmap {
             val url = it.attr("data-src")

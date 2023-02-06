@@ -92,7 +92,7 @@ class ElifilmsProvider : MainAPI() {
         val poster = soup.selectFirst("div#galeria a")!!.attr("href")
         val episodes = soup.select("ul.episodios li").map { li ->
             val href = (li.select("a")).attr("href")
-            val epThumb = li.selectFirst("img")!!.attr("src")
+            val epThumb = li.selectFirst(".imagen img")!!.attr("src")
             val seasonid = li.selectFirst(".numerando")!!.text().let { str ->
                 str.split("-").mapNotNull { subStr -> subStr.toIntOrNull() }
             }
@@ -144,37 +144,20 @@ class ElifilmsProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        app.get(data).document.select(".video ul.dropdown-menu li").apmap {
-            val servers = it.attr("data-link")
-            val doc = app.get(servers).document
-            doc.select("input").apmap {
-                val postkey = it.attr("value")
-                app.post(
-                    "https://entrepeliculasyseries.nz/r.php",
-                    headers = mapOf(
-                        "Host" to "entrepeliculasyseries.nz",
-                        "User-Agent" to USER_AGENT,
-                        "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                        "Accept-Language" to "en-US,en;q=0.5",
-                        "Content-Type" to "application/x-www-form-urlencoded",
-                        "Origin" to "https://entrepeliculasyseries.nz",
-                        "DNT" to "1",
-                        "Connection" to "keep-alive",
-                        "Referer" to servers,
-                        "Upgrade-Insecure-Requests" to "1",
-                        "Sec-Fetch-Dest" to "document",
-                        "Sec-Fetch-Mode" to "navigate",
-                        "Sec-Fetch-Site" to "same-origin",
-                        "Sec-Fetch-User" to "?1",
-                    ),
-                    //params = mapOf(Pair("h", postkey)),
-                    data = mapOf(Pair("h", postkey)),
-                    allowRedirects = false
-                ).okhttpResponse.headers.values("location").apmap {
-                    loadExtractor(it, data, subtitleCallback, callback)
-                }
+        val datam = app.get(data)
+        val doc = datam.document
+
+        doc.select("iframe").apmap {
+            val url = it.attr("src")
+            val urldecode = base64Decode(url)
+                val linkdentro = app.get(urldecode, timeout = 120).document
+                val iframe = linkdentro.select("li").attr("onclick").replace("go_to_player('https://re.sololatino.net/p/embed.php?link=", "").replace("')", "")
+                val iframedecode = iframe
+                loadExtractor(iframedecode, mainUrl, subtitleCallback, callback)
+
+
+
             }
-        }
         return true
     }
 }
