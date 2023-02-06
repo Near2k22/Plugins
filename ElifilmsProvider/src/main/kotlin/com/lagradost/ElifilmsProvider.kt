@@ -152,7 +152,7 @@ class ElifilmsProvider : MainAPI() {
             val urldecode = base64Decode(url)
                 val linkdentro = app.get(urldecode, timeout = 120).document
                 val iframe = linkdentro.select("li").attr("onclick").replace("go_to_player('https://re.sololatino.net/p/embed.php?link=", "").replace("')", "")
-                val iframedecode = iframe
+                val iframedecode = base64Decode(iframe)
                 loadExtractor(iframedecode, mainUrl, subtitleCallback, callback)
 
 
