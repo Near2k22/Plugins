@@ -89,12 +89,12 @@ class ElifilmsProvider : MainAPI() {
 
         val title = soup.selectFirst(".data h1")!!.text()
         val description = soup.selectFirst(".wp-content p")?.text()?.trim()
-        val poster: String? = soup.selectFirst(".poster img")!!.attr("src").replace("w154", "original")
-        val episodes = soup.select(".TPostMv article").map { li ->
-            val href = (li.select("a") ?: li.select(".C a") ?: li.select("article a")).attr("href")
-            val epThumb = li.selectFirst("div.Image img")!!.attr("data-src")
-            val seasonid = li.selectFirst("span.Year")!!.text().let { str ->
-                str.split("x").mapNotNull { subStr -> subStr.toIntOrNull() }
+        val poster: String? = soup.selectFirst("div.poster img")!!.attr("src").replace("w154", "original")
+        val episodes = soup.select("il.episodios li").map { li ->
+            val href = (li.select("a") ?: li.select(".C a") ?: li.select("a")).attr("href")
+            val epThumb = li.selectFirst("div.imagen img")!!.attr("src")
+            val seasonid = li.selectFirst("numerando")!!.text().let { str ->
+                str.split("-").mapNotNull { subStr -> subStr.toIntOrNull() }
             }
             val isValid = seasonid.size == 2
             val episode = if (isValid) seasonid.getOrNull(1) else null
