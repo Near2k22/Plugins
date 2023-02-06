@@ -49,9 +49,9 @@ class FreeTVProvider : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        return data.items.filter { it.attributes["tvg-id"]?.contains(query) ?: false }.map { channel ->
+        return data.items.filter { it.attributes["group-title"]?.contains(query) ?: false }.map { channel ->
             val streamurl = channel.url.toString()
-            val channelname = channel.attributes["tvg-id"].toString()
+            val channelname = channel.title.toString()
             val posterurl = channel.attributes["tvg-logo"].toString()
             val nation = channel.attributes["group-title"].toString()
             LiveSearchResponse(
