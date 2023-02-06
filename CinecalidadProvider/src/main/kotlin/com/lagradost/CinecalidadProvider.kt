@@ -131,6 +131,7 @@ class CinecalidadProvider : MainAPI() {
                     poster,
                     null,
                     description,
+
                 )
             }
             else -> null
@@ -155,6 +156,8 @@ class CinecalidadProvider : MainAPI() {
                 val linkdentro = app.get(urldecode, timeout = 120).document
                 val iframe = fixUrl(linkdentro.select("iframe").attr("src"))
                             loadExtractor(iframe, mainUrl, subtitleCallback, callback)
+
+
 
             }
         }
