@@ -87,7 +87,7 @@ class CinecalidadProvider : MainAPI() {
 
         val title = soup.selectFirst(".mb-2.text-lg")!!.text()
         val description = soup.selectFirst("div.textwidget.max-w-none p")?.text()?.trim()
-        val poster: String? = soup.selectFirst("div.grid.items-center.gap-4 img")?.attr("data-src")?.replace("-400x600", "")
+        val poster: String? = soup.selectFirst(".gap-4 img")?.attr("data-src")?.replace("-400x600", "")
         val episodes = soup.select("div.se-c div.se-a ul.episodios li").map { li ->
             val href = li.selectFirst("a")!!.attr("href")
             val epThumb = li.selectFirst("img.lazy")!!.attr("data-src")
@@ -108,7 +108,7 @@ class CinecalidadProvider : MainAPI() {
             )
         }
         return when (val tvType =
-            if (url.contains("/ver-pelicula/")) TvType.Movie else TvType.TvSeries) {
+            if (url.contains("/pelicula/")) TvType.Movie else TvType.TvSeries) {
             TvType.TvSeries -> {
                 TvSeriesLoadResponse(
                     title,
