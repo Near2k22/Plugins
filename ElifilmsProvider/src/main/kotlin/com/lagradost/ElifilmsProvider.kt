@@ -2,6 +2,7 @@ package com.lagradost
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.mvvm.logError
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
 
@@ -16,6 +17,7 @@ class ElifilmsProvider : MainAPI() {
         TvType.Movie,
         TvType.TvSeries,
     )
+    private val interceptor = CloudflareKiller()
     override val vpnStatus = VPNStatus.MightBeNeeded //Due to evoload sometimes not loading
     override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
         val items = ArrayList<HomePageList>()
@@ -26,7 +28,7 @@ class ElifilmsProvider : MainAPI() {
         )
         urls.apmap { (url, name) ->
             try {
-                val soup = app.get(url).document
+                val soup = app.get(url, interceptor = interceptor).document
                 val home = soup.select(".item").map {
                     val title = it.selectFirst("h3")!!.text()
                     val link = it.selectFirst("a")!!.attr("href")
@@ -52,7 +54,7 @@ class ElifilmsProvider : MainAPI() {
     }
     override suspend fun search(query: String): List<SearchResponse> {
         val url = "$mainUrl/?s=${query}"
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         return document.select(".item").map {
             val title = it.selectFirst("h3")!!.text()
@@ -85,11 +87,11 @@ class ElifilmsProvider : MainAPI() {
 
 
     override suspend fun load(url: String): LoadResponse? {
-        val soup = app.get(url, timeout = 120).document
+        val soup = app.get(url, interceptor = interceptor, timeout = 120).document
 
         val title = soup.selectFirst(".data h1")!!.text()
         val description = soup.selectFirst(".wp-content p")?.text()?.trim()
-        val poster: String? = soup.selectFirst("img")!!.attr("src").replace("w154", "original")
+        val poster: String? = soup.selectFirst("img")?.attr("src")?.replace("w154", "original")
         val episodes = soup.select("ul.episodios li").map { li ->
             val href = (li.select("a")).attr("href")
             val epThumb = li.selectFirst("img")!!.attr("src")
