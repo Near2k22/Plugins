@@ -1,5 +1,6 @@
 package com.lagradost
 
+import android.widget.Toast
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.mvvm.logError
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -144,20 +145,31 @@ class ElifilmsProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val datam = app.get(data)
-        val doc = datam.document
+        app.get(data).document.select("iframe > src").map { script ->
+            fetchUrls(script.data()
+                .replace("https://api.mycdn.moe/furl.php?id=","https://www.fembed.com/v/")
+                .replace("https://api.mycdn.moe/sblink.php?id=","https://streamsb.net/e/"))
+                .apmap { link ->
+                    if (link.contains("https://api.mycdn.moe/video/") || link.contains("https://api.mycdn.moe/embed.php?customid") || link.contains("https://embedsito.net/video/")) {
+                        val doc = app.get(link).document
+                        doc.select("div.ODDIV li").apmap {
+                            val linkencoded = it.attr("data-r")
+                            val linkdecoded = base64Decode(linkencoded)
+                                .replace(Regex("https://owodeuwu.xyz|https://sypl.xyz"),"https://embedsito.com")
+                                .replace(Regex(".poster.*"),"")
+                            val secondlink = it.attr("onclick").substringAfter("go_to_player('").substringBefore("',")
+                            loadExtractor(linkdecoded, link,subtitleCallback, callback)
+                            val restwo = app.get("https://api.mycdn.moe/player/?id=$secondlink", allowRedirects = false).document
+                            val thirdlink = restwo.selectFirst("body > iframe")?.attr("src")
+                                ?.replace(Regex("https://owodeuwu.xyz|https://sypl.xyz"),"https://embedsito.com")
+                                ?.replace(Regex(".poster.*"),"")
+                            loadExtractor(thirdlink!!, link, subtitleCallback, callback)
 
-        doc.select("iframe").apmap {
-            val url = it.attr("src")
-            val urldecode = base64Decode(url)
-                val linkdentro = app.get(urldecode, timeout = 120).document
-                val iframe = linkdentro.select("li").attr("onclick").replace("go_to_player('https://re.sololatino.net/p/embed.php?link=", "").replace("')", "")
-                val iframedecode = base64Decode(iframe)
-                loadExtractor(iframedecode, mainUrl, subtitleCallback, callback)
-
-
-
-            }
+                        }
+                    }
+                    loadExtractor(link, data, subtitleCallback, callback)
+                }
+        }
         return true
     }
 }
