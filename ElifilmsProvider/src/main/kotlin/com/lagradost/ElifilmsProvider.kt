@@ -145,7 +145,7 @@ class ElifilmsProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        app.get(data).document.select("iframe > src").map { script ->
+        app.get(data).document.select("src").map { script ->
             fetchUrls(script.data()
                 .replace("https://api.mycdn.moe/furl.php?id=","https://www.fembed.com/v/")
                 .replace("https://api.mycdn.moe/sblink.php?id=","https://streamsb.net/e/"))
